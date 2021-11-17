@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if [[ -z "$1" ]] || [[ "$1" == -h ]] || [[ "$1" == --help ]]; then
+    echo "Usage: gitsync <branch_name> [<upstream>]"
+else
+    if [[ -z "$2" ]]; then
+        SOURCE=origin
+    else
+        SOURCE="$2"
+    fi
+
+    git add .
+    git stash
+    git checkout "$1"
+    git fetch --all --prune --prune-tags --no-tags
+    git pull $SOURCE "$1" -X theirs
+
+    if [[ $SOURCE != 'origin' ]]; then
+        git push origin "$1"
+    fi
+fi
+
+unset SOURCE
